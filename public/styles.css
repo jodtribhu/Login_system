@@ -1,0 +1,67 @@
+#login{
+    background-color: #79a3b1;
+    height: 50%;
+    width: 50%;
+    /* vertical-align: center; */
+    padding-top: 2%;
+    padding-bottom: 2%;
+    
+    position:absolute;
+    top:0;
+    bottom: 0;
+    left:0;
+    right:0;
+    margin: auto;
+    
+
+  }
+  .logindiv{
+    font-family: 'Montserrat', sans-serif;
+  
+  }
+  .loginform{
+    border: 0px;
+  }
+  .loginpage{
+    padding:50% 30%;
+  }
+
+.logintitle
+{
+  text-align: center;
+  padding-bottom: 8%;
+}
+.background
+{
+    background-color: #456268;
+}
+.container {
+    border-radius: 2%;
+    padding:2% 8% 6% 8%;
+    background-color: #d0e8f2;
+    width:90%
+}
+.inp
+{
+    padding:5px;
+    text-align: center;
+}
+.textp
+{
+    padding-top:4px;
+    text-align: center;
+}
+.loginbutton
+{
+    padding-top: 2%;
+    
+    text-align: center;
+}
+.singlebutton
+{
+    width:100px;
+    padding-left: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    padding-right: 2%;
+}
