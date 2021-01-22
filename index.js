@@ -9,6 +9,8 @@ var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 
 
+/*Mysql Express Session*/
+
 app.use(session({
 	key: 'session_cookie_name',
 	secret: 'session_cookie_secret',
@@ -35,6 +37,9 @@ app.use(bodyParser.urlencoded({
 app.use(express.static('public'));
 app.set("view engine", "ejs");
 
+
+/*Mysql Connection*/
+
 var connection = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -55,6 +60,8 @@ const customFields={
     passwordField:'pw',
 };
 
+
+/*Passport JS*/
 const verifyCallback=(username,password,done)=>{
    
      connection.query('SELECT * FROM users WHERE username = ? ', [username], function(error, results, fields) {
@@ -95,7 +102,7 @@ passport.deserializeUser(function(userId,done){
 
 
 
-
+/*middleware*/
 function validPassword(password,hash,salt)
 {
     var hashVerify=crypto.pbkdf2Sync(password,salt,10000,60,'sha512').toString('hex');
@@ -142,20 +149,12 @@ app.use((req,res,next)=>{
     next();
 });
 
-
-  app.get('/', (req, res, next) => {
+/*routes*/
+app.get('/', (req, res, next) => {
     res.send('<h1>Home</h1><p>Please <a href="/register">register</a></p>');
 });
 
-
-    app.get('/login', (req, res, next) => {
-   
-    // const form = '<h1>Login Page</h1><form method="POST" action="/login">\
-    // Enter Username:<br><input type="text" name="uname">\
-    // <br>Enter Password:<br><input type="password" name="pw">\
-    // <br><br><input type="submit" value="Submit"></form>';
-
-    // res.send(form);
+app.get('/login', (req, res, next) => {
         res.render('login')
 });
 app.get('/logout', (req, res, next) => {
@@ -173,10 +172,6 @@ app.get('/login-failure', (req, res, next) => {
 
 app.get('/register', (req, res, next) => {
     console.log("Inside get");
-    // const form = '<h1>Register Page</h1><form method="post" action="register">\
-    //                 Enter Username:<br><input type="text" name="uname">\
-    //                 <br>Enter Password:<br><input type="password" name="pw">\
-    //                 <br><br><input type="submit" value="Submit"></form>';
     res.render('register')
     
 });
@@ -206,20 +201,9 @@ app.post('/register',(req,res,next)=>{
 
 app.post('/login',passport.authenticate('local',{failureRedirect:'/login-failure',successRedirect:'/login-success'}));
 
-
 app.get('/protected-route',isAuth,(req, res, next) => {
  
     res.send('<h1>You are authenticated</h1><p><a href="/logout">Logout and reload</a></p>');
-    // console.log(req.session);
-    // console.log(req.user);
-   
-    // console.log(req.isAuthenticated());
-    // This is how you check if a user is authenticated and protect a route.  You could turn this into a custom middleware to make it less redundant
-    // if (req.isAuthenticated()) {
-    //     res.send('<h1>You are authenticated</h1><p><a href="/logout">Logout and reload</a></p>');
-    // } else {
-    //     res.send('<h1>You are not authenticated</h1><p><a href="/login">Login</a></p>');
-    // }
 });
 
 app.get('/admin-route',isAdmin,(req, res, next) => {
@@ -227,6 +211,7 @@ app.get('/admin-route',isAdmin,(req, res, next) => {
     res.send('<h1>You are admin</h1><p><a href="/logout">Logout and reload</a></p>');
 
 });
-  app.listen(3000, function() {
+
+app.listen(3000, function() {
     console.log('App listening on port 8080!')
   });
