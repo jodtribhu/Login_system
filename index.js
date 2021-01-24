@@ -95,7 +95,7 @@ passport.serializeUser((user,done)=>{
 
 passport.deserializeUser(function(userId,done){
     console.log('deserializeUser'+ userId);
-    connection.query('SELECT * FROM users where id = '+userId, function(error, results) {
+    connection.query('SELECT * FROM users where id = ?',[userId], function(error, results) {
             done(null, results[0]);    
     });
 });
@@ -125,7 +125,7 @@ function genPassword(password)
     }
     else
     {
-        res.status(401).json({msg:"You are not authorized to view this resource"});
+        res.redirect('/notAuthorized');
     }
 }
 
@@ -138,8 +138,27 @@ function isAdmin(req,res,next)
     }
     else
     {
-        res.status(401).json({msg:"You are not authorized to view this resource"});
+        res.redirect('/notAuthorizedAdmin');
     }   
+}
+
+function userExists(req,res,next)
+{
+    connection.query('Select * from users where username=? ', [req.body.uname], function(error, results, fields) {
+        if (error) 
+            {
+                console.log("Error");
+            }
+       else if(results.length>0)
+         {
+            res.redirect('/userAlreadyExists')
+        }
+        else
+        {
+            next();
+        }
+       
+    });
 }
 
 
@@ -176,7 +195,7 @@ app.get('/register', (req, res, next) => {
     
 });
 
-app.post('/register',(req,res,next)=>{
+app.post('/register',userExists,(req,res,next)=>{
     console.log("Inside post");
     console.log(req.body.pw);
     const saltHash=genPassword(req.body.pw);
@@ -215,3 +234,20 @@ app.get('/admin-route',isAdmin,(req, res, next) => {
 app.listen(3000, function() {
     console.log('App listening on port 8080!')
   });
+
+
+  app.get('/notAuthorized', (req, res, next) => {
+    console.log("Inside get");
+    res.send('<h1>You are not authorized to view the resource </h1><p><a href="/login">Retry Login</a></p>');
+    
+});
+app.get('/notAuthorizedAdmin', (req, res, next) => {
+    console.log("Inside get");
+    res.send('<h1>You are not authorized to view the resource as you are not the admin of the page  </h1><p><a href="/login">Retry to Login as admin</a></p>');
+    
+});
+app.get('/userAlreadyExists', (req, res, next) => {
+    console.log("Inside get");
+    res.send('<h1>Sorry This username is taken </h1><p><a href="/register">Register with different username</a></p>');
+    
+});
